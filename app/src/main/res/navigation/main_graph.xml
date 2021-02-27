@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/puppiesList">
+
+    <fragment
+        android:id="@+id/puppiesList"
+        android:name="com.example.androiddevchallenge.PuppiesList"
+        android:label="PuppiesList" >
+        <action
+            android:id="@+id/action_puppiesList_to_puppyDetail"
+            app:destination="@id/puppyDetail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/puppyDetail"
+        android:name="com.example.androiddevchallenge.PuppyDetail"
+        android:label="PuppyDetail" />
+
+</navigation>
