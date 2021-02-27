@@ -10,7 +10,11 @@
         android:label="PuppiesList" >
         <action
             android:id="@+id/action_puppiesList_to_puppyDetail"
-            app:destination="@id/puppyDetail" />
+            app:destination="@id/puppyDetail"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment

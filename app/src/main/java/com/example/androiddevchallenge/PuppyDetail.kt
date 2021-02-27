@@ -1,18 +1,14 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,12 +27,33 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Favorite
+
+import androidx.compose.runtime.*
+
+import androidx.compose.ui.BiasAlignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import com.example.androiddevchallenge.data.MainActivityViewModel
+import com.example.androiddevchallenge.ui.theme.shapes
+
 
 class PuppyDetail : Fragment() {
     private lateinit var viewModel: MainActivityViewModel
     private var puppyID: MutableState<Int> = mutableStateOf(-1)
     private var dog:Dog ? = null
-
+    private val START_TOP_PADDING = 320
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,9 +72,9 @@ class PuppyDetail : Fragment() {
             dog = viewModel.getDogByID(puppyID.value)
 
         }
-
     }
 
+    @ExperimentalAnimationApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,61 +90,181 @@ class PuppyDetail : Fragment() {
         }
     }
 
-    @Composable
-    fun MyDog(){
-            Box(modifier = Modifier.padding(10.dp)){
-                Column {
-                    dog?.let {
-                        CoilImage(
-                            data = it.image_url,
-                            contentDescription = "This is image",
-                            fadeIn = true,
-                            loading = {
-                                Box(Modifier.matchParentSize()) {
-                                    CircularProgressIndicator(Modifier.align(Alignment.Center))
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .height(180.dp)
-                                .fillMaxWidth()
-                                .clip(shape = RoundedCornerShape(5.dp)),
-                            contentScale = ContentScale.Crop,
-                        )
-                    }
-                    Text(text = "Hello, My name is ${dog?.name}",
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .fillMaxWidth(),
-                        style = typography.h6
-                    )
-                    Text(text = "Hello, My name is ${dog?.description}",
-                        modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 12.dp)
-                            .fillMaxWidth(),
-                        style = typography.body1,
 
-                        overflow = TextOverflow.Ellipsis)
-                }
+
+
+    @Composable
+    fun Parallax() {
+
+
+        val scrollState = rememberScrollState()
+        val imageOffset = (-scrollState.value * 0.2f).dp
+        val iconBackgroundAlpha = ((scrollState.value / START_TOP_PADDING.toFloat()) * 0.2f).coerceAtMost(0.2f)
+
+        Box {
+            dog?.let {
+                CoilImage(
+                    data = it.image_url,
+                    contentDescription = null,
+                    fadeIn = true,
+                    loading = {
+                        Box(Modifier.matchParentSize()) {
+                            CircularProgressIndicator(Modifier.align(Alignment.Center))
+                        }
+                    },
+                    modifier = Modifier
+                        .offset(y = imageOffset)
+                        .height(370.dp)
+                        .fillMaxWidth(),
+
+                    contentScale = ContentScale.Crop,
+                    )
             }
+
+            Column(
+                Modifier
+                    .verticalScroll(scrollState)
+                    .padding(top = START_TOP_PADDING.dp)
+                    .background(
+                        MaterialTheme.colors.surface,
+                        RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                    )
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .padding(all = 32.dp)
+            ) {
+                Text("Hello, I am", style = MaterialTheme.typography.h6)
+                dog?.let { Text(text = it.name, style = MaterialTheme.typography.h4) }
+
+
+
+                dog?.let { Text(text = it.short_description, style = MaterialTheme.typography.caption) }
+                Spacer(modifier = Modifier.size(5.dp))
+                ExpandingFab()
+
+                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(16.dp))
+
+                dog?.let { Text(text = it.description, style = MaterialTheme.typography.body1) }
+
+                Spacer(Modifier.size(16.dp))
+
+             }
+            IconButton(onClick = { activity?.onBackPressed() }, modifier = Modifier
+                .padding(8.dp)
+                .background(Color.Black.copy(alpha = iconBackgroundAlpha), shape = CircleShape)) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_baseline_arrow_back_24),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(32.dp),
+                    tint = Color.White
+                )
+            }
+
+
+        }
+
 
     }
 
+
+
+    @Composable
+    fun ExpandingFab(){
+
+        var fav by remember {
+            mutableStateOf(false)
+        }
+
+        ExtendedFloatingActionButton(text = {
+            Text(text = "Favorite")
+        },
+            onClick = {
+                fav = !fav
+            },
+
+            icon = {
+                Icon(imageVector = Icons.Outlined.Favorite ,
+                    ""
+                )
+            }
+        )
+
+
+    }
+
+//    @Composable
+//    fun MultiFloatingActionButton(
+//        fabIcon: ImageBitmap,
+//        toState: MultiFabState
+//    ) {
+//        var toState by remember { mutableStateOf(MultiFabState.COLLAPSED) }
+//        val transition = updateTransition(targetState = toState)
+//        val rotation: Float by transition.animateFloat{ state ->
+//            if (state == MultiFabState.EXPANDED) 45f else 0f
+//        }
+//
+//    }
+
+
+
+    @Composable
+    fun LoadingAnim(){
+        val infiniteTransition = rememberInfiniteTransition()
+        val color by infiniteTransition.animateColor(
+            initialValue = MaterialTheme.colors.primary,
+            targetValue = MaterialTheme.colors.secondary,
+            animationSpec = infiniteRepeatable(
+                animation = tween(2500, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+        Column(Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(color = color, shape = CircleShape),
+
+                )
+            {
+                Image(
+                    painter = painterResource(id = R.drawable.dog_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp)
+                )
+            }
+        }
+
+
+
+    }
+
+    @ExperimentalAnimationApi
     @Composable
     fun MyPuppy(){
-
         Surface(color = MaterialTheme.colors.background) {
-            when(this.puppyID.value != -1 && this.dog != null) {
-                true -> {
-                    MyDog()
+
+            Crossfade(
+                targetState = this.puppyID.value != -1 && this.dog != null,
+
+            ) { screen ->
+                when (screen) {
+                    true -> Parallax()
+                    false -> LoadingAnim()
                 }
-                false -> Text(text = "Loading...")
             }
 
         }
 
     }
 
+    @ExperimentalAnimationApi
     @Preview("Light Theme", widthDp = 360, heightDp = 640)
     @Composable
     fun LightPreview() {
@@ -136,6 +273,7 @@ class PuppyDetail : Fragment() {
         }
     }
 
+    @ExperimentalAnimationApi
     @Preview("Dark Theme", widthDp = 360, heightDp = 640)
     @Composable
     fun DarkPreview() {
@@ -144,3 +282,4 @@ class PuppyDetail : Fragment() {
         }
     }
 }
+
