@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyr ight 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,10 +41,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Icon
@@ -52,7 +55,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Female
+import androidx.compose.material.icons.filled.Male
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.twotone.Pets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -62,6 +69,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
@@ -72,6 +80,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.androiddevchallenge.data.Dog
 import com.example.androiddevchallenge.data.MainActivityViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import com.example.androiddevchallenge.ui.theme.typography
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -158,13 +167,19 @@ class PuppyDetail : Fragment() {
                 Text("Hello, I am", style = MaterialTheme.typography.h6)
                 dog?.let { Text(text = it.name, style = MaterialTheme.typography.h4) }
 
-                dog?.let { Text(text = it.short_description, style = MaterialTheme.typography.caption) }
+                dog?.let { Text(text = it.short_description) }
                 Spacer(modifier = Modifier.size(5.dp))
+
+                InfoList()
                 ExpandingFab()
 
                 Spacer(modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.size(16.dp))
 
+                Text(
+                    text = "About me",
+                    style = typography.h6
+                )
+                Spacer(modifier = Modifier.size(5.dp))
                 dog?.let { Text(text = it.description, style = MaterialTheme.typography.body1) }
 
                 Spacer(Modifier.size(16.dp))
@@ -187,6 +202,39 @@ class PuppyDetail : Fragment() {
     }
 
     @Composable
+    fun InfoList(){
+        Column(
+            modifier = Modifier.padding(vertical = 16.dp),
+        ){
+            MyChip(text = if(dog?.age!! >0) "${dog?.age} years" else "New Born", icon = Icons.Default.Cake)
+            MyChip(text = if(dog?.gender!!) "Male" else "Female", icon = if(dog?.gender!!) Icons.Default.Male else Icons.Default.Female)
+            MyChip(text = dog!!.breed, icon = Icons.TwoTone.Pets)
+        }
+    }
+
+
+    @Composable
+    fun MyChip(modifier: Modifier = Modifier, text: String, icon: ImageVector) {
+
+
+        Card(
+            modifier = modifier,
+            elevation = 0.dp
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = icon, contentDescription = null)
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = text,
+                    style = typography.caption,
+                )
+            }
+        }
+    }
+
+    @Composable
     fun ExpandingFab() {
 
         var fav by remember {
@@ -195,7 +243,7 @@ class PuppyDetail : Fragment() {
 
         ExtendedFloatingActionButton(
             text = {
-                Text(text = "Favorite")
+                Text(text = "Adopt Now")
             },
             onClick = {
                 fav = !fav
