@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,13 +32,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.androiddevchallenge.data.Dog
 import com.example.androiddevchallenge.data.MainActivityViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import com.example.androiddevchallenge.ui.theme.shapes
 import com.example.androiddevchallenge.ui.theme.typography
 import dev.chrisbanes.accompanist.coil.CoilImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class PuppiesList :Fragment() {
@@ -127,7 +121,6 @@ class PuppiesList :Fragment() {
         Surface(color = MaterialTheme.colors.background) {
 
                 LazyColumn(
-                    state = rememberLazyListState(),
                     verticalArrangement = Arrangement.spacedBy(25.dp)
                 ) {
                     item {
