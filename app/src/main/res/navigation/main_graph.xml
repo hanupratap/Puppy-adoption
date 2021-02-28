@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/puppiesList"
-        android:name="com.example.androiddevchallenge.PuppiesList"
+        android:name="com.example.androiddevchallenge.ui.PuppiesList"
         android:label="PuppiesList" >
         <action
             android:id="@+id/action_puppiesList_to_puppyDetail"
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/puppyDetail"
-        android:name="com.example.androiddevchallenge.PuppyDetail"
+        android:name="com.example.androiddevchallenge.ui.PuppyDetail"
         android:label="PuppyDetail" />
 
 </navigation>
