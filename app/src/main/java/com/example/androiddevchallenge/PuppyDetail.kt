@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.androiddevchallenge
 
 import android.os.Bundle
@@ -63,13 +78,11 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 class PuppyDetail : Fragment() {
     private lateinit var viewModel: MainActivityViewModel
     private var puppyID: MutableState<Int> = mutableStateOf(-1)
-    private var dog:Dog ? = null
+    private var dog: Dog ? = null
     private val START_TOP_PADDING = 320
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,15 +90,13 @@ class PuppyDetail : Fragment() {
         viewModel = ViewModelProvider(this)
             .get(MainActivityViewModel::class.java)
 
-
         CoroutineScope(Main).launch {
             delay(1000)
-            arguments?.getInt("puppy_id")?.let{
+            arguments?.getInt("puppy_id")?.let {
                 puppyID.value = it
             }
 
             dog = viewModel.getDogByID(puppyID.value)
-
         }
     }
 
@@ -105,12 +116,8 @@ class PuppyDetail : Fragment() {
         }
     }
 
-
-
-
     @Composable
     fun Parallax() {
-
 
         val scrollState = rememberScrollState()
         val imageOffset = (-scrollState.value * 0.2f).dp
@@ -133,7 +140,7 @@ class PuppyDetail : Fragment() {
                         .fillMaxWidth(),
 
                     contentScale = ContentScale.Crop,
-                    )
+                )
             }
 
             Column(
@@ -151,8 +158,6 @@ class PuppyDetail : Fragment() {
                 Text("Hello, I am", style = MaterialTheme.typography.h6)
                 dog?.let { Text(text = it.name, style = MaterialTheme.typography.h4) }
 
-
-
                 dog?.let { Text(text = it.short_description, style = MaterialTheme.typography.caption) }
                 Spacer(modifier = Modifier.size(5.dp))
                 ExpandingFab()
@@ -163,11 +168,13 @@ class PuppyDetail : Fragment() {
                 dog?.let { Text(text = it.description, style = MaterialTheme.typography.body1) }
 
                 Spacer(Modifier.size(16.dp))
-
-             }
-            IconButton(onClick = { activity?.onBackPressed() }, modifier = Modifier
-                .padding(8.dp)
-                .background(Color.Black.copy(alpha = iconBackgroundAlpha), shape = CircleShape)) {
+            }
+            IconButton(
+                onClick = { activity?.onBackPressed() },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .background(Color.Black.copy(alpha = iconBackgroundAlpha), shape = CircleShape)
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_arrow_back_24),
                     contentDescription = null,
@@ -176,37 +183,31 @@ class PuppyDetail : Fragment() {
                     tint = Color.White
                 )
             }
-
-
         }
-
-
     }
 
-
-
     @Composable
-    fun ExpandingFab(){
+    fun ExpandingFab() {
 
         var fav by remember {
             mutableStateOf(false)
         }
 
-        ExtendedFloatingActionButton(text = {
-            Text(text = "Favorite")
-        },
+        ExtendedFloatingActionButton(
+            text = {
+                Text(text = "Favorite")
+            },
             onClick = {
                 fav = !fav
             },
 
             icon = {
-                Icon(imageVector = Icons.Outlined.Favorite ,
+                Icon(
+                    imageVector = Icons.Outlined.Favorite,
                     ""
                 )
             }
         )
-
-
     }
 
 //    @Composable
@@ -222,10 +223,8 @@ class PuppyDetail : Fragment() {
 //
 //    }
 
-
-
     @Composable
-    fun LoadingAnim(){
+    fun LoadingAnim() {
         val infiniteTransition = rememberInfiniteTransition()
         val color by infiniteTransition.animateColor(
             initialValue = MaterialTheme.colors.primary,
@@ -235,17 +234,18 @@ class PuppyDetail : Fragment() {
                 repeatMode = RepeatMode.Reverse
             )
         )
-        Column(Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
             Box(
                 modifier = Modifier
                     .size(100.dp)
                     .background(color = color, shape = CircleShape),
 
-                )
-            {
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.dog_icon),
                     contentDescription = null,
@@ -255,14 +255,11 @@ class PuppyDetail : Fragment() {
                 )
             }
         }
-
-
-
     }
 
     @ExperimentalAnimationApi
     @Composable
-    fun MyPuppy(){
+    fun MyPuppy() {
         Surface(color = MaterialTheme.colors.background) {
 
             Crossfade(
@@ -274,9 +271,7 @@ class PuppyDetail : Fragment() {
                     false -> LoadingAnim()
                 }
             }
-
         }
-
     }
 
     @ExperimentalAnimationApi
@@ -297,4 +292,3 @@ class PuppyDetail : Fragment() {
         }
     }
 }
-

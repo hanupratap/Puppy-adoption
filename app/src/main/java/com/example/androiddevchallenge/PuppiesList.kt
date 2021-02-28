@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.androiddevchallenge
 
 import android.os.Bundle
@@ -5,16 +20,43 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Pets
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,10 +77,8 @@ import com.example.androiddevchallenge.ui.theme.MyTheme
 import com.example.androiddevchallenge.ui.theme.typography
 import dev.chrisbanes.accompanist.coil.CoilImage
 
-
-class PuppiesList :Fragment() {
+class PuppiesList : Fragment() {
     private lateinit var viewModel: MainActivityViewModel
-
 
     @ExperimentalFoundationApi
     override fun onCreateView(
@@ -60,7 +100,7 @@ class PuppiesList :Fragment() {
     }
 
     @Composable
-    fun FirstCard(){
+    fun FirstCard() {
 
         val infiniteTransition = rememberInfiniteTransition()
         val color by infiniteTransition.animateColor(
@@ -106,12 +146,11 @@ class PuppiesList :Fragment() {
                         style = typography.subtitle2,
                     )
                 }
-
             }
         }
         Spacer(modifier = Modifier.padding(vertical = 5.dp))
     }
-    
+
     // Start building your app here!
     @ExperimentalFoundationApi
     @Composable
@@ -120,40 +159,40 @@ class PuppiesList :Fragment() {
 
         Surface(color = MaterialTheme.colors.background) {
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(25.dp)
-                ) {
-                    item {
-                        MyHeader()
-                    }
-                    item { FirstCard() }
-                    item{
-                        Card(
-                            elevation = 20.dp,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        ) {
-
-                        }
-                    }
-
-                    items(items = animals, itemContent = {
-                        MyCard(dog = it)
-                    },
-
-                        )
-                    item {
-                        Spacer(modifier = Modifier.padding(7.dp))
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(25.dp)
+            ) {
+                item {
+                    MyHeader()
+                }
+                item { FirstCard() }
+                item {
+                    Card(
+                        elevation = 20.dp,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
                     }
                 }
 
+                items(
+                    items = animals,
+                    itemContent = {
+                        MyCard(dog = it)
+                    },
+
+                )
+                item {
+                    Spacer(modifier = Modifier.padding(7.dp))
+                }
+            }
         }
     }
 
     @Composable
-    fun MyHeader(){
+    fun MyHeader() {
         Row(
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Text(
                 text = "Puppies",
                 style = typography.h3,
@@ -166,93 +205,89 @@ class PuppiesList :Fragment() {
     }
 
     @Composable
-    fun MyCard(dog: Dog){
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Card(
-                    elevation = 10.dp,
-                    modifier = Modifier
-                        .height(180.dp)
-                        .fillMaxWidth()
-                        .clip(shape = RoundedCornerShape(20.dp))
-                        .clickable {
-                            val bundle = Bundle()
-                            bundle.putInt("puppy_id", dog.id)
-                            findNavController().navigate(
-                                R.id.action_puppiesList_to_puppyDetail,
-                                bundle
-                            )
-                        }
-                )
-                {
-                    CoilImage(
-                        data = dog.image_url,
-                        contentDescription = null,
-                        fadeIn = true,
-                        loading = {
-                            Box(Modifier.matchParentSize()) {
-                                CircularProgressIndicator(Modifier.align(Alignment.Center))
-                            }
-                        },
-                        contentScale = ContentScale.Crop,
-
+    fun MyCard(dog: Dog) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Card(
+                elevation = 10.dp,
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+                    .clip(shape = RoundedCornerShape(20.dp))
+                    .clickable {
+                        val bundle = Bundle()
+                        bundle.putInt("puppy_id", dog.id)
+                        findNavController().navigate(
+                            R.id.action_puppiesList_to_puppyDetail,
+                            bundle
                         )
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(text = dog.name,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    style = typography.h6
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(text = dog.short_description,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    style = typography.body1
-                )
-                Spacer(Modifier.height(4.dp))
-                if(dog.age!=0){
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ){
-                        item{
-                            NormalChip(text = "${dog.age} years")
-                        }
-                        item{
-                            NormalChip(text = if(dog.gender) "Female" else "Male")
-                        }
-                        item{
-                            NormalChip(text = dog.breed)
-                        }
-
-
                     }
+            ) {
+                CoilImage(
+                    data = dog.image_url,
+                    contentDescription = null,
+                    fadeIn = true,
+                    loading = {
+                        Box(Modifier.matchParentSize()) {
+                            CircularProgressIndicator(Modifier.align(Alignment.Center))
+                        }
+                    },
+                    contentScale = ContentScale.Crop,
 
-                }
-                else{
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ){
-                        item{
-                            Chip(text = "New Born")
-                        }
-                        item{
-                            NormalChip(text = if(dog.gender) "Female" else "Male")
-                        }
-                        item{
-                            NormalChip(text = dog.breed)
-                        }
+                )
+            }
 
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = dog.name,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                style = typography.h6
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = dog.short_description,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                style = typography.body1
+            )
+            Spacer(Modifier.height(4.dp))
+            if (dog.age != 0) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        NormalChip(text = "${dog.age} years")
                     }
-
+                    item {
+                        NormalChip(text = if (dog.gender) "Female" else "Male")
+                    }
+                    item {
+                        NormalChip(text = dog.breed)
+                    }
+                }
+            } else {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        Chip(text = "New Born")
+                    }
+                    item {
+                        NormalChip(text = if (dog.gender) "Female" else "Male")
+                    }
+                    item {
+                        NormalChip(text = dog.breed)
+                    }
                 }
             }
+        }
     }
 
     @Composable
-    fun NormalChip(text: String){
-        Text(text = text,
+    fun NormalChip(text: String) {
+        Text(
+            text = text,
             modifier = Modifier
                 .border(
                     1.dp,
@@ -289,13 +324,13 @@ class PuppiesList :Fragment() {
                         .alpha(value)
                 )
                 Spacer(Modifier.width(4.dp))
-                Text(text = text,
+                Text(
+                    text = text,
                     style = typography.subtitle2,
                 )
             }
         }
     }
-
 
     @ExperimentalFoundationApi
     @Preview("Light Theme", widthDp = 360, heightDp = 640)
@@ -314,5 +349,4 @@ class PuppiesList :Fragment() {
             MyPuppies()
         }
     }
-
 }
